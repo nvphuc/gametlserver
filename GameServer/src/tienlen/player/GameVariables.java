@@ -7,8 +7,9 @@ import tienlen.table.Table;
 public class GameVariables {
 	public int orderNumber;
 	public boolean isReady;
-	public boolean isFinishGame;	
 	public Table table;
+	
+	public boolean isFinishGame;		
 	public Vector<Integer> cards;
 	
 	public GameVariables(Table table, int orderNumber) {
