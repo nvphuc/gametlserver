@@ -8,14 +8,14 @@ public class InforPlayer implements Serializable {
 	
 	private String UserName;
 	private ImageIcon Avatar;
-	private int money;
+	private int Credits;
 	private int Status;
 	
 	// Status = 0: chua san sang; = 1: da san sang
-	public InforPlayer(String UserName, ImageIcon Avatar, int money, int Status) {
+	public InforPlayer(String UserName, ImageIcon Avatar, int Credit, int Status) {
 		this.UserName = UserName;
 		this.Avatar = Avatar;
-		this.money = money;
+		this.Credits = Credits;
 		this.Status = Status;
 	}
 
@@ -27,8 +27,8 @@ public class InforPlayer implements Serializable {
 		return Avatar;
 	}
 
-	public int getMoney() {
-		return money;
+	public int getCredit() {
+		return Credits;
 	}
 
 	public int getStatus() {
