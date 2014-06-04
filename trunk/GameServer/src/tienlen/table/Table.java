@@ -14,7 +14,7 @@ public class Table extends Thread {
 	private int amountBet;
 	private int tableSize;
 	private Player[] players;
-	private int playersNumer = 0;
+	private int playersNumber = 0;
 	private int[] listFinishGame;
 	private int readyNumber;
 	private int finishNumber;
@@ -25,7 +25,7 @@ public class Table extends Thread {
 	private int[] listSkipTurn;
 
 	private boolean isEndGame;
-	private boolean active = true;
+	private boolean active = true;//neu chu phong roi phong thi active = false, va yeu cau moi nguoi roi phong
 
 	public void run() {
 exit:	while (players[0] != null) {
@@ -120,7 +120,7 @@ exit:	while (players[0] != null) {
 		}
 		active = false;
 		sendMessageToAllPlayers("RequiteLeaveTable");
-		while(playersNumer != 0) {
+		while(playersNumber != 0) {
 			try {
 				sleep(1000);
 			} catch (InterruptedException e) {
@@ -199,7 +199,7 @@ exit:	while (players[0] != null) {
 			for (int index = 0; index < tableSize; index++) {
 				if (players[index] == null) {
 					players[index] = player;
-					playersNumer++;
+					playersNumber++;
 					players[index].setGame(new GameVariables(this, index));
 					return true;
 				}
@@ -370,7 +370,7 @@ exit:	while (players[0] != null) {
 
 		players[orderNumber].setGame(null);
 		players[orderNumber] = null;
-		playersNumer--;
+		playersNumber--;
 		if (active) {
 			sendInforTableToAllPlayers();
 		}

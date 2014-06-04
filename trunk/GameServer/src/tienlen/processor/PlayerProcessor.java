@@ -1,7 +1,5 @@
 package tienlen.processor;
 
-import javax.swing.ImageIcon;
-
 import tienlen.newtype.PlayerStatus;
 import tienlen.player.Player;
 import tienlen.table.Table;
@@ -40,22 +38,6 @@ public class PlayerProcessor extends Processor {
 			processLogin(args[1]);
 			break;
 
-		case "CreateTable":
-			processCreateTable(args[1]);
-			break;
-
-		case "PlayRight":
-			processPlayRight();
-			break;
-
-		case "JoinTable":
-			processJoinTable(args[1]);
-			break;
-			
-		case "UpdataTables":
-			processUpdateTables();
-			break;
-			
 		case "Edit":
 			getConnector().sendMessage("RSEdit");
 			player.setStatus(PlayerStatus.EDIT_ACCOUNT);
@@ -76,6 +58,22 @@ public class PlayerProcessor extends Processor {
 			
 		case "UpdateAvatar":
 			processUpdateAvatar();
+			break;
+			
+		case "CreateTable":
+			processCreateTable(args[1]);
+			break;
+
+		case "PlayRight":
+			processPlayRight();
+			break;
+
+		case "JoinTable":
+			processJoinTable(args[1]);
+			break;
+			
+		case "UpdataTables":
+			processUpdateTables();
 			break;
 			
 		// Thoat

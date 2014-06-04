@@ -92,7 +92,7 @@ public class GameProcessor extends Processor {
 		getConnector().sendMessage("RSGetPlayerCanInvite@" + content);
 	}
 
-	public void processLeaveTable() {
+	private void processLeaveTable() {
 		// roi phong
 		int amount = getTable().removePlayer(getGameVariables().orderNumber);
 		player.addCredit(amount);
