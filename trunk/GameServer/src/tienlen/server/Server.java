@@ -9,6 +9,7 @@ import tienlen.player.Player;
 import tienlen.table.Table;
 
 public class Server {
+	
 	private Vector<Player> players;
 	private Vector<Table> tables;
 
@@ -23,6 +24,7 @@ public class Server {
 				players.add(new Player(this, socket));
 			}
 		} catch (IOException e) {
+			System.err.println(e);
 		}
 	}
 
