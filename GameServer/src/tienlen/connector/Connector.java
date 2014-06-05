@@ -51,15 +51,6 @@ public class Connector {
 			return false;
 		}
 	}
-	
-	public synchronized boolean sendInforTable(InforTable infor) {
-		try {
-			oos.writeObject(infor);
-			return true;
-		} catch (IOException e) {
-			return false;
-		}
-	}
 
 	public String receiveMessage() {
 		String message = "";
