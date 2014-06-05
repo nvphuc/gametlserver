@@ -15,7 +15,9 @@ public class GameProcessor extends Processor {
 	@Override
 	public void run() {
 		while (player.getStatus() == PlayerStatus.PLAY_GAME) {
-			handleMessage(getConnector().receiveMessage());
+			String message = getConnector().receiveMessage();
+			System.out.println("GameProcessor nhan:" + message);
+			handleMessage(message);
 		}
 		if (player.getStatus() == PlayerStatus.DISCONNECT) {
 			disconnect();
@@ -93,15 +95,13 @@ public class GameProcessor extends Processor {
 	}
 
 	private void processLeaveTable() {
+		player.setStatus(PlayerStatus.CONNECT);
+		new PlayerProcessor(player);
 		// roi phong
 		int amount = getTable().removePlayer(getGameVariables().orderNumber);
 		player.addCredit(amount);
 		// cap nhat lai tien khi roi ban
 		databaseAccessor.updateCredit(player.getIdPlayer(), player.getCredit());
-
-		// cap nhat lai trang thai player
-		player.setStatus(PlayerStatus.CONNECT);
-		new PlayerProcessor(player);
 	}
 
 	private void processSkipTurn() {

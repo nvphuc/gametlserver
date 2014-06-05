@@ -142,7 +142,8 @@ public class PlayerProcessor extends Processor {
 		Table table = getTable(tableName);
 		if (table != null) {
 			if (table.addPlayer(player)) {
-				getConnector().sendMessage("RSJoinTable@OK:" + table.getSize());
+				//getConnector().sendMessage("RSJoinTable@OK:" + table.getSize());
+				getConnector().sendMessage("RSCreateTable@OK:" + table.getSize() + ":" + player.getGame().orderNumber);
 				player.setStatus(PlayerStatus.PLAY_GAME);			
 				new GameProcessor(player);
 			}
@@ -154,7 +155,8 @@ public class PlayerProcessor extends Processor {
 	private void processPlayRight() {
 		for (Table table : getServer().getTables()) {
 			if (table.addPlayer(player)) {
-				getConnector().sendMessage("RSPlayRight@OK:" + table.getSize());
+				//getConnector().sendMessage("RSPlayRight@OK:" + table.getSize());
+				getConnector().sendMessage("RSCreateTable@OK:" + table.getSize() + ":" + player.getGame().orderNumber);
 				player.setStatus(PlayerStatus.PLAY_GAME);
 				new GameProcessor(player);
 				return;
@@ -164,15 +166,16 @@ public class PlayerProcessor extends Processor {
 	}
 
 	private void processCreateTable(String args) {
-		// args = "muctiencuoc:songuoichoi"
+		//args = "tenphong:muctiencuoc:songuoichoi"
 		String[] data = args.split(":");
 		String tableName = data[0];
+		System.out.println("Test tablename: " + tableName);
 		int amount = Integer.parseInt(data[1]);
-		int maxPlayer = Integer.parseInt(data[2]);
+		int tableSize = Integer.parseInt(data[2]);
 		
 		if (getTable(data[0]) == null && amount <= player.getCredit()) {
-			new Table(getServer(), player, tableName, amount, maxPlayer);
-			getConnector().sendMessage("RSCreateTable@OK:" + maxPlayer);
+			new Table(getServer(), player, tableName, amount, tableSize);
+			getConnector().sendMessage("RSCreateTable@OK:" + tableSize + ":" + player.getGame().orderNumber);
 			player.setStatus(PlayerStatus.PLAY_GAME);
 			new GameProcessor(player);
 		} else {
