@@ -10,7 +10,7 @@ public class GameVariables {
 	public Table table;
 	
 	public boolean isFinishGame;		
-	public Vector<Integer> cards;
+	public Vector<String> cards;
 	
 	public GameVariables(Table table, int orderNumber) {
 		this.table = table;
@@ -20,6 +20,6 @@ public class GameVariables {
 	public void resetVariables() {
 		isReady = false;
 		isFinishGame = false;
-		cards = new Vector<Integer>();
+		cards = new Vector<String>();
 	}
 }
