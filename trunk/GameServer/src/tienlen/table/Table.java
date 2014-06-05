@@ -1,35 +1,88 @@
 package tienlen.table;
 
-import tienlen.connector.InforPlayer;
-import tienlen.connector.InforTable;
+import javax.swing.ImageIcon;
+
 import tienlen.newtype.CardsType;
 import tienlen.player.GameVariables;
 import tienlen.player.Player;
 import tienlen.server.Server;
 
 public class Table extends Thread {
-	private Server server;
+	public Server server;
 
-	private String tableName;
-	private int amountBet;
-	private int tableSize;
-	private Player[] players;
-	private int playersNumber = 0;
-	private int[] listFinishGame;
-	private int readyNumber;
-	private int finishNumber;
-	private int curPlayer;
-	private int prePlayer;
+	public String tableName;
+	public int amountBet;
+	public int tableSize;
+	public Player[] players;
+	public int playersNumber;
+	public int[] listFinishGame;
+	public int readyNumber;
+	public int finishNumber;
+	public int curPlayer;
+	public int prePlayer;
 
-	private int[] preCards;
-	private int[] listSkipTurn;
+	public int[] preCards;
+	public int[] listSkipTurn;
 
-	private boolean isEndGame;
-	private boolean active = true;//neu chu phong roi phong thi active = false, va yeu cau moi nguoi roi phong
+	public boolean isEndGame;
+	public boolean active = true;// neu chu phong roi phong thi active = false,
+									// va yeu cau moi nguoi roi phong
+
+	public void kiemtralistBoLuot() {
+		System.out.print("ListSkipTurn:" );
+		for(int i = 0; i < tableSize; i++) {
+			System.out.print(" " + listSkipTurn[i]);
+		}
+		System.out.println();
+	}
+	
+	public void kiemtralistFinishGame() {
+		System.out.print("ListFinishGame:" );
+		for(int i = 0; i < tableSize; i++) {
+			System.out.print(" " + listFinishGame[i]);
+		}
+		System.out.println();
+	}
+	
+	public void ktra() {
+		kiemtralistBoLuot();
+		kiemtralistFinishGame();
+	}
+	
+	public Table(Server server, Player player, String tableName, int amountBet,
+			int tableSize) {
+		this.server = server;
+		this.server.addTable(this);
+		this.tableName = tableName;
+		this.amountBet = amountBet;
+		this.tableSize = tableSize;
+		
+		players = new Player[tableSize];
+		for (int i = 0; i < tableSize; i++) {
+			players[i] = null;
+		}
+		addPlayer(player);
+
+		// stt tu 0 - > 3 tuong ung nhat nhi ba tu
+		listFinishGame = new int[tableSize];
+		for (int i = 0; i < tableSize; i++) {
+			listFinishGame[i] = -1;
+		}
+
+		// moi phan tu tuong ung voi 1 player trong ban: 0-condanh, 1-boluot
+		listSkipTurn = new int[tableSize];
+		for (int i = 0; i < tableSize; i++) {
+			listSkipTurn[i] = 0;
+		}
+
+		this.readyNumber = 0;
+		this.start();
+	}
 
 	public void run() {
-exit:	while (players[0] != null) {
+		exit:while (players[0] != null) {
 			// cho tat ca ready
+			System.out.println("Doi readyNumber:");
 			while (readyNumber != tableSize) {
 				try {
 					sleep(1000);
@@ -53,12 +106,12 @@ exit:	while (players[0] != null) {
 			sendMessageToAllPlayers("StartGame");
 
 			try {
-				sleep(3000);
+				sleep(5000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 
-			sendMessageToAllPlayers("HideReady");
+			//sendMessageToAllPlayers("HideReady");
 
 			Dealer dealer = new Dealer();
 
@@ -76,15 +129,16 @@ exit:	while (players[0] != null) {
 			sendMessageToAllPlayers("Turn@" + curPlayer);
 
 			// Cho den khi van dau ket thuc
+			System.out.println("Doi endGame:");
 			while (!isEndGame) {
 				try {
-					sleep(1000);
+					sleep(3000);
 				} catch (InterruptedException e) {
 				}
 			}
 
 			// Gui ket qua ve client
-			sendMessageToAllPlayers("GameResult");
+			/*sendMessageToAllPlayers("GameResult");
 
 			try {
 				sleep(3000);
@@ -92,7 +146,7 @@ exit:	while (players[0] != null) {
 			}
 
 			String content = "";
-			double delta = 2;
+			/*double delta = 2;
 			if (tableSize % 4 == 0) {
 				delta = 0.5;
 			}
@@ -110,26 +164,35 @@ exit:	while (players[0] != null) {
 				} else {
 					content += "*";
 				}
+			}*/
+			/*for(int i = 0; i < tableSize; i++) {
+				if(content.equals("")) {
+					content += listFinishGame[i];
+					System.out.println(listFinishGame[i]);
+				}
+				else {
+					content += ":" + listFinishGame[i];
+				}
 			}
 			String report = "Report@" + content;
 			sendMessageToAllPlayers(report);
 			try {
 				sleep(3000);
 			} catch (InterruptedException e) {
-			}
+			}*/
 		}
 		active = false;
 		sendMessageToAllPlayers("RequiteLeaveTable");
-		while(playersNumber != 0) {
+		/*while(playersNumber != 0) {
 			try {
 				sleep(1000);
 			} catch (InterruptedException e) {
 			}
-		}
+		}*/
 		server.removeTable(this);
 	}
 
-	private void sendCards(Player player) {
+	public void sendCards(Player player) {
 		// Cau truc message gui: "DealCards@card1_card2_..._card13"
 		String message = "DealCards@";
 		for (int i = 0; i < 13; i++) {
@@ -142,7 +205,7 @@ exit:	while (players[0] != null) {
 		player.getConnector().sendMessage(message);
 	}
 
-	private void resetTable() {
+	public void resetTable() {
 		readyNumber = 0;
 		finishNumber = 0;
 
@@ -165,41 +228,13 @@ exit:	while (players[0] != null) {
 		}
 	}
 
-	public Table(Server server, Player player, String tableName, int amountBet,
-			int tableSize) {
-		this.server = server;
-		this.server.addTable(this);
-		this.tableName = tableName;
-		this.amountBet = amountBet;
-		this.tableSize = tableSize;
-
-		players = new Player[tableSize];
-		for (int i = 0; i < tableSize; i++) {
-			players[i] = null;
-		}
-		addPlayer(player);
-
-		// stt tu 0 - > 3 tuong ung nhat nhi ba tu
-		listFinishGame = new int[tableSize];
-		for (int i = 0; i < tableSize; i++) {
-			listFinishGame[i] = -1;
-		}
-
-		// moi phan tu tuong ung voi 1 player trong ban: 0-condanh, 1-boluot
-		listSkipTurn = new int[tableSize];
-		for (int i = 0; i < tableSize; i++) {
-			listSkipTurn[i] = 0;
-		}
-
-		this.start();
-	}
-
 	public synchronized boolean addPlayer(Player player) {
 		if (isAvailable(player)) {
 			for (int index = 0; index < tableSize; index++) {
 				if (players[index] == null) {
 					players[index] = player;
 					playersNumber++;
+					System.out.println("addPlayer: " + playersNumber + " " + index);//
 					players[index].setGame(new GameVariables(this, index));
 					return true;
 				}
@@ -213,7 +248,7 @@ exit:	while (players[0] != null) {
 				.getCredit());
 	}
 
-	private int getNumberPlayerInTable() {
+	public int getNumberPlayerInTable() {
 		int count = 0;
 		for (int i = 0; i < tableSize; i++) {
 			if (players[i] != null)
@@ -223,30 +258,31 @@ exit:	while (players[0] != null) {
 	}
 
 	public String getTableName() {
-		return tableName;
+		return this.tableName;
 	}
 
 	public void sendInforTableToAllPlayers() {
-		InforPlayer[] inforPlayers = new InforPlayer[tableSize];
-		for (int i = 0; i < tableSize; i++) {
-			if (players[i] != null) {
-				Player player = players[i];
-				int ready = 0;
-				if (player.getGame().isReady)
-					ready = 1;
-				inforPlayers[i] = new InforPlayer(player.getUserName(),
-						player.getAvatar(), player.getCredit(), ready);
-			} else {
-				inforPlayers[i] = null;
+		for(int i = 0; i < tableSize; i++) {
+			if(players[i] != null) {
+				sendMessageToAllPlayers("InforTable@" + i);
+				sendMessageToAllPlayers(players[i].getUserName());
+				sendMessageToAllPlayers(players[i].getCredit() + "");
+				sendImageForAllPlayer(players[i].getAvatar());
+				sendMessageToAllPlayers(players[i].getGame().isReady+"");
 			}
 		}
-		InforTable inforTable = new InforTable(inforPlayers);
-		for (int i = 0; i < tableSize; i++) {
-			if (players[i] != null) {
-				players[i].getConnector().sendMessage("InforTable");
-				players[i].getConnector().sendInforTable(inforTable);
+	}
+	
+	public void sendImageForAllPlayer(ImageIcon img) {
+		for(int i = 0; i < tableSize; i++){
+			if(players[i]!=null) {
+				players[i].getConnector().sendImage(img);
 			}
 		}
+	}
+
+	public Player getPlayer(int index) {
+		return players[index];
 	}
 
 	public void setSkipTurn(Player player) {
@@ -263,8 +299,13 @@ exit:	while (players[0] != null) {
 		switch (tableSize - finishNumber - count) {
 		case 0:
 			for (int i = 1; i < tableSize; i++) {
-				int index = (prePlayer + 1) % 4;
+				int index = (prePlayer + 1) % tableSize;
 				if (players[index] != null) {
+					System.out.println("0 gui new turn");
+					for(int j = 0; j < tableSize; j++) {
+						listSkipTurn[j] = 0;
+					}
+					preCards = null;
 					sendMessageToAllPlayers("NewTurn@" + index);
 					return;
 				}
@@ -276,6 +317,11 @@ exit:	while (players[0] != null) {
 				if (players[i] != null) {
 					if (listSkipTurn[i] == 0
 							&& getVariables(players[i]).isFinishGame == false) {
+						System.out.println("1 gui new turn");
+						for(int j = 0; j < tableSize; j++) {
+							listSkipTurn[j] = 0;
+						}
+						preCards = null;
 						sendMessageToAllPlayers("NewTurn@" + i);
 						return;
 					}
@@ -285,10 +331,11 @@ exit:	while (players[0] != null) {
 
 		default:
 			for (int i = 1; i < tableSize; i++) {
-				int index = (getVariables(player).orderNumber + 1) % 4;
+				int index = (getVariables(player).orderNumber + 1) % tableSize;
 				if (players[index] != null) {
 					if (listSkipTurn[index] == 0
 							&& getVariables(players[index]).isFinishGame == false) {
+						System.out.println("Con lai gui turn");
 						sendMessageToAllPlayers("Turn@" + index);
 						return;
 					}
@@ -298,13 +345,15 @@ exit:	while (players[0] != null) {
 		}
 	}
 
-	private GameVariables getVariables(Player player) {
+	public GameVariables getVariables(Player player) {
 		return player.getGame();
 	}
 
 	public synchronized void updateGame(Player player, String listCards) {
-		int[] cards = parseCard(listCards);
-		preCards = cards;
+		String[] cards = parseCardToString(listCards);
+
+		// luu cac la da danh lai vao preCards
+		preCards = parseCardToInt(listCards);
 		for (int i = 0; i < cards.length; i++) {
 			getVariables(player).cards.remove(cards[i]);
 		}
@@ -313,6 +362,7 @@ exit:	while (players[0] != null) {
 		if (getVariables(player).cards.size() == 0) {
 			addFinishPlayer(player);
 		}
+		ktra();
 		// neu tat ca deu het bai
 		if (finishNumber == tableSize - 1) {
 			for (int i = 0; i < tableSize; i++) {
@@ -328,7 +378,7 @@ exit:	while (players[0] != null) {
 		// nguoc lai con > 2 nguoi danh
 		else {
 			for (int i = 1; i < tableSize; i++) {
-				int index = (getVariables(player).orderNumber + i) % 4;
+				int index = (getVariables(player).orderNumber + i) % tableSize;
 				if (players[index] != null) {
 					if (listSkipTurn[index] == 0
 							&& getVariables(players[index]).isFinishGame != true) {
@@ -340,13 +390,31 @@ exit:	while (players[0] != null) {
 		}
 	}
 
-	private void addFinishPlayer(Player player) {
+	private int[] parseCardToInt(String listCards) {
+		String[] tmp = listCards.split("_");
+		int[] arrCard = new int[tmp.length];
+		for(int i = 0; i < tmp.length; i++) {
+			arrCard[i] = Integer.parseInt(tmp[i]);
+		}
+		return arrCard;
+	}
+
+	public void addFinishPlayer(Player player) {
 		for (int rank = 0; rank < tableSize; rank++) {
 			if (listFinishGame[rank] == -1) {
-				sendMessageToAllPlayers("Finish@"
-						+ getVariables(player).orderNumber + ":" + rank);
 				listFinishGame[rank] = getVariables(player).orderNumber;
 				getVariables(player).isFinishGame = true;
+				
+				String content = "";
+				for(int i = 0; i< tableSize; i++) {
+					if(content.equals("")) {
+						content += listFinishGame[i];
+					}
+					else {
+						content += ":" + listFinishGame[i];
+					}
+				}
+				player.getConnector().sendMessage("Finish@"+content);
 				finishNumber++;
 				return;
 			}
@@ -372,7 +440,8 @@ exit:	while (players[0] != null) {
 		players[orderNumber] = null;
 		playersNumber--;
 		if (active) {
-			sendInforTableToAllPlayers();
+			//sendInforTableToAllPlayers();
+			sendMessageToAllPlayers("LeaveTable@"+orderNumber);
 		}
 
 		return valueReturn;
@@ -439,7 +508,7 @@ exit:	while (players[0] != null) {
 	}
 
 	public boolean checkHitCards(String listCards) {
-		int[] cards = parseCard(listCards);
+		int[] cards = parseCardToInt(listCards);
 		if (preCards == null) {
 			if (getType(cards) == CardsType.ERROR) {
 				return false;
@@ -472,16 +541,11 @@ exit:	while (players[0] != null) {
 		}
 	}
 
-	private int[] parseCard(String strCard) {
-		String[] temp = strCard.split("_");
-		int[] cards = new int[temp.length];
-		for (int i = 0; i < cards.length; i++) {
-			cards[i] = Integer.parseInt(temp[i]);
-		}
-		return cards;
+	public String[] parseCardToString(String strCard) {
+		return strCard.split("_");
 	}
 
-	private CardsType getType(int[] cards) {
+	public CardsType getType(int[] cards) {
 		switch (cards.length) {
 
 		case 1:
@@ -527,27 +591,27 @@ exit:	while (players[0] != null) {
 		}
 	}
 
-	private boolean isDoi(int card1, int card2) {
+	public boolean isDoi(int card1, int card2) {
 		if (card1 / 4 == card2 / 4)
 			return true;
 		return false;
 	}
 
-	private boolean isSam(int[] cards) {
+	public boolean isSam(int[] cards) {
 		if (cards.length == 3 && isDoi(cards[0], cards[1])
 				&& isDoi(cards[0], cards[2]))
 			return true;
 		return false;
 	}
 
-	private boolean isTuquy(int[] cards) {
+	public boolean isTuquy(int[] cards) {
 		if (cards.length == 4 && isDoi(cards[0], cards[1])
 				&& isDoi(cards[2], cards[3]) && isDoi(cards[0], cards[2]))
 			return true;
 		return false;
 	}
 
-	private boolean isBadoithong(int[] cards) {
+	public boolean isBadoithong(int[] cards) {
 		if (cards.length == 6 && isDoi(cards[0], cards[1])
 				&& isDoi(cards[2], cards[3]) && isDoi(cards[4], cards[5])) {
 			for (int i = 0; i < 3; i++) {
@@ -563,7 +627,7 @@ exit:	while (players[0] != null) {
 		return false;
 	}
 
-	private boolean isBondoithong(int[] cards) {
+	public boolean isBondoithong(int[] cards) {
 		if (cards.length == 8 && isDoi(cards[0], cards[1])
 				&& isDoi(cards[2], cards[3]) && isDoi(cards[4], cards[5])
 				&& isDoi(cards[6], cards[7])) {
@@ -580,7 +644,7 @@ exit:	while (players[0] != null) {
 		return false;
 	}
 
-	private boolean isSanh(int[] cards) {
+	public boolean isSanh(int[] cards) {
 		if (cards.length > 2) {
 			for (int i = 0; i < cards.length; i++) {
 				if (cards[i] / 4 != cards[0] / 4 - i) {

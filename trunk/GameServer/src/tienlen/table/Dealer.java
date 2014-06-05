@@ -23,9 +23,9 @@ public class Dealer {
 	}
 
 	// chia bai cho nguoi choi
-	public void dealCards(Vector<Integer> playerCards, int index) {
+	public void dealCards(Vector<String> playerCards, int index) {
 		for(int i = 0; i < 13; i++) {
-			playerCards.add(deck[index]);
+			playerCards.add(deck[index]+"");
 			index += 4;
 		}
 	}
