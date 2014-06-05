@@ -127,8 +127,10 @@ public class DataBaseAccessor {
 		}
 		if (!avatar.equals("")) {
 			try {
-				BufferedImage tmp = ImageIO.read(new File("Avatars/" + avatar + ".png"));
-				return new ImageIcon(tmp.getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+				BufferedImage tmp = ImageIO.read(new File("Avatars/" + avatar
+						+ ".png"));
+				return new ImageIcon(tmp.getScaledInstance(100, 100,
+						Image.SCALE_SMOOTH));
 			} catch (IOException e) {
 				return null;
 			}
@@ -173,14 +175,25 @@ public class DataBaseAccessor {
 					check = true;
 				}
 			}
+			sql = "select * from ACCOUNTS where USERNAME = '" + userName//
+					+ "';";
+			rs = stmt.executeQuery(sql);
+
+			while (rs.next()) {//
+				if (userName.equals(rs.getString("USERNAME"))) {
+					check = false;
+					break;
+				}
+			}
+
 			rs.close();
-			
+
 			if (check) {
 				sql = "update ACCOUNTS set USERNAME = '" + userName
 						+ "' where ID = " + idPlayer + ";";
 				stmt.executeUpdate(sql);
 			}
-			
+
 			stmt.close();
 			con.commit();
 			con.close();
@@ -197,7 +210,7 @@ public class DataBaseAccessor {
 			con = ConnectDataBase.CreateConnection();
 			con.setAutoCommit(false);
 			stmt = con.createStatement();
-			
+
 			String sql = "select PASS2 from ACCOUNTS where ID = " + idPlayer
 					+ ";";
 			ResultSet rs = stmt.executeQuery(sql);
@@ -207,13 +220,13 @@ public class DataBaseAccessor {
 				}
 			}
 			rs.close();
-			
+
 			if (check) {
-				sql = "update ACCOUNTS set PASS1 = '" + pass
-						+ "' where ID = " + idPlayer + ";";
+				sql = "update ACCOUNTS set PASS1 = '" + pass + "' where ID = "
+						+ idPlayer + ";";
 				stmt.executeUpdate(sql);
 			}
-			
+
 			stmt.close();
 			con.commit();
 			con.close();
